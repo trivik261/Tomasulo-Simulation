@@ -332,7 +332,7 @@ def RegisterRename(instr_no, reg_name):
 # Reads instruction file line by line, parses instruction, fills-in instruction queue
 def ClockZeroQueue():
 	choice = input('Which Instruction Set? (1 or 2)')
-	if choice == 1:
+	if str(choice).strip() == "1":
 		instrfile = open('Instruction1.txt','r')
 	else:
 		instrfile = open('Instruction2.txt','r')
@@ -897,4 +897,6 @@ def MainFunction():
 
 
 
-MainFunction()
+if __name__ == "__main__":
+    MainFunction()
+

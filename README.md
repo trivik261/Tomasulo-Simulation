@@ -1,22 +1,16 @@
-#Tomasulo Algorithm - Python3
+# Tomasulo Simulation
 
-3 Reservation Stations for Add (Add, Fadd, Sub, FSub)
-2 Reservation Stations for Mul (Mul, Fmul)
-2 Reservation Station for LogicShift (Cmp, Xor, Nand, LSL, LSR)
-3 for Load and Store Buffer Each
+A cycle-by-cycle model of dynamic scheduling with reservation stations, register renaming, operand capture, and a single common data bus.
 
-16 registers (R0 to R15)
+## Run
+```bash
+python simulate.py Instruction1.txt --output trace.json
+python -m unittest discover -s tests -v
+```
+Python 3.10+; no packages or Verilog tools required for the standalone entry point. Initial registers contain their indices; unmapped memory reads return zero. Instructions support ADD, SUB, MUL, FADD, FMUL, bitwise operations, shifts, LDR, and STR. Programs use `OP destination source source`; memory addresses use `offset+Rbase` or `Rbase+offset`.
 
-Time to execute:
-ADD/SUB -> 14 cc
-MUL -> 34 cc
-FADD/FSUB -> 12 cc
-FMUL -> 36 cc
-Logic -> 1 cc (NAND, XOR, CMP)
-Shift -> 4 cc (LSL, LSR)
-STR -> 2 cc
-LDR -> 2 cc
+## Scheduling model
+One instruction issues per cycle. Separate add/multiply/logic/memory functional units execute when operands are ready. Stations retain results until one result can broadcast per cycle. Dependencies consume captured values or producer tags, protecting RAW, WAR, and WAW cases. Memory operations serialize in program order. Python numeric arithmetic is used; this is an educational scheduling model, not a bit-accurate processor or IEEE-754 hardware model.
 
-Run python3 TomasuloAlgorithm.py
-
-enter 1 or 2 as input (choosing the test cases instr file)
+## Original implementation
+`tomo.py` is preserved as the original coursework. It invokes Verilog backends (`rda`, `fpa`, `fpm`, `alu`, `wallace`) that are absent from this repository and is not the portable run path. `simulate.py` reconstructs the scheduling behavior without those missing external modules. Tests cover dependent arithmetic, independent execution, register hazards, store/load ordering, and malformed programs.
